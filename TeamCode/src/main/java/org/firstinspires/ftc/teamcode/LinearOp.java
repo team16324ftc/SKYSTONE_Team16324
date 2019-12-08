@@ -54,7 +54,7 @@ import com.qualcomm.robotcore.util.Range;
 @Disabled
 public class LinearOp extends LinearOpMode {
 
-    // Declare OpMode members. This is a comment.
+    // Declare OpMode members. Hello world!
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;

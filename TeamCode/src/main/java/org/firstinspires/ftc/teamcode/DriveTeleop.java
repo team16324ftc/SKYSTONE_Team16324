@@ -62,7 +62,7 @@ public class DriveTeleop extends LinearOpMode {
     private DcMotor rightDrive = null;
     private DcMotor armLyft = null;
     private Servo tailGateServo = null;
-    double servoSpeed = 0.5;
+    double tailGateServoSpeed = 0.5;
 
     @Override
 
@@ -83,7 +83,7 @@ public class DriveTeleop extends LinearOpMode {
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
         armLyft.setDirection(DcMotor.Direction.FORWARD);
-        tailGateServo.setPosition(0);
+        tailGateServo.setPosition(tailGateServoSpeed);
         //servo.setPosition(servoPosition);
 
         // Wait for the game to start (driver presses PLAY)
@@ -125,17 +125,19 @@ public class DriveTeleop extends LinearOpMode {
 
 
             // Hand/Grip. Pressing A closes it. Pressing B opens it.
-            if (gamepad1.x == true) {
-                servoSpeed = 1.0;
-                tailGateServo.setPosition(servoSpeed);
-            }
             if (gamepad1.y == true) {
-                servoSpeed = 0.0;
-                tailGateServo.setPosition(servoSpeed);
+                tailGateServoSpeed = 1.0;
+                tailGateServo.setPosition(tailGateServoSpeed);
+                sleep(310);
+                tailGateServoSpeed = 0.5;
+                tailGateServo.setPosition(tailGateServoSpeed);
             }
-            if (gamepad1.y == false | gamepad1.x == false) {
-                servoSpeed = 0.5;
-                tailGateServo.setPosition(servoSpeed);
+            if (gamepad1.x == true) {
+                tailGateServoSpeed = 0.0;
+                tailGateServo.setPosition(tailGateServoSpeed);
+                sleep(300);
+                tailGateServoSpeed = 0.5;
+                tailGateServo.setPosition(tailGateServoSpeed);
             }
 
             // Show the elapsed game time and wheel power.

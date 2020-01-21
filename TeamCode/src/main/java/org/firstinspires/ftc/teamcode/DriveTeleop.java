@@ -63,6 +63,8 @@ public class DriveTeleop extends LinearOpMode {
     private DcMotor armLyft = null;
     private Servo tailGateServo = null;
     double tailGateServoSpeed = 0.5;
+    private Servo armServo = null;
+    double armServoSpeed = 0.5;
 
     @Override
 
@@ -77,6 +79,7 @@ public class DriveTeleop extends LinearOpMode {
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         armLyft  = hardwareMap.get(DcMotor.class, "arm_lift");
         tailGateServo = hardwareMap.servo.get("tail_gate_servo");
+        armServo = hardwareMap.servo.get("arm_servo");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -84,6 +87,7 @@ public class DriveTeleop extends LinearOpMode {
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
         armLyft.setDirection(DcMotor.Direction.FORWARD);
         tailGateServo.setPosition(tailGateServoSpeed);
+        armServo.setPosition(armServoSpeed);
         //servo.setPosition(servoPosition);
 
         // Wait for the game to start (driver presses PLAY)
@@ -138,6 +142,18 @@ public class DriveTeleop extends LinearOpMode {
                 sleep(300);
                 tailGateServoSpeed = 0.5;
                 tailGateServo.setPosition(tailGateServoSpeed);
+            }
+
+            if(gamepad1.a == true) {
+                armServo.setPosition(1.0);
+                sleep(1000);
+                armServo.setPosition(0.5);
+            }
+
+            if(gamepad1.b == true) {
+                armServo.setPosition(0.0);
+                sleep(1000);
+                armServo.setPosition(0.5);
             }
 
             // Show the elapsed game time and wheel power.

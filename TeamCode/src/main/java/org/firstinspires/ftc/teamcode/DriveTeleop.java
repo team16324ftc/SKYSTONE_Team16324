@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -60,10 +61,11 @@ public class DriveTeleop extends LinearOpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     private DcMotor armLyft = null;
-    //Servo servo;
-    //double servoPosition = 0.0;
+    private Servo tailGateServo = null;
+    double servoSpeed = 0.5;
 
     @Override
+
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -74,13 +76,14 @@ public class DriveTeleop extends LinearOpMode {
         leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         armLyft  = hardwareMap.get(DcMotor.class, "arm_lift");
-        //servo = hardwareMap.servo.get("hand_servo");
+        tailGateServo = hardwareMap.servo.get("tail_gate_servo");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
         armLyft.setDirection(DcMotor.Direction.FORWARD);
+        tailGateServo.setPosition(0);
         //servo.setPosition(servoPosition);
 
         // Wait for the game to start (driver presses PLAY)
@@ -93,6 +96,7 @@ public class DriveTeleop extends LinearOpMode {
             // Setup a variable for each drive wheel to save power level for telemetry
             double leftPower;
             double rightPower;
+
 
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
@@ -109,6 +113,8 @@ public class DriveTeleop extends LinearOpMode {
             // leftPower  = -gamepad1.left_stick_y ;
             // rightPower = -gamepad1.right_stick_y ;
 
+
+
             // Send calculated power to wheels
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
@@ -117,18 +123,20 @@ public class DriveTeleop extends LinearOpMode {
             double armPower = gamepad1.right_stick_y;
             armLyft.setPower(armPower);
 
-            /*
-            // Hand/Grip. Pressing A closes it. Pressing B opens it.
-            if (gamepad1.a == true) {
-                servoPosition = 0.5;
-                servo.setPosition(servoPosition);
-            }
-            if (gamepad1.b == true) {
-                servoPosition = 0.0;
-                servo.setPosition(servoPosition);
-            }
-             */
 
+            // Hand/Grip. Pressing A closes it. Pressing B opens it.
+            if (gamepad1.x == true) {
+                servoSpeed = 1.0;
+                tailGateServo.setPosition(servoSpeed);
+            }
+            if (gamepad1.y == true) {
+                servoSpeed = 0.0;
+                tailGateServo.setPosition(servoSpeed);
+            }
+            if (gamepad1.y == false | gamepad1.x == false) {
+                servoSpeed = 0.5;
+                tailGateServo.setPosition(servoSpeed);
+            }
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());

@@ -29,14 +29,25 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.View;
+
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Locale;
 
 
 /**
@@ -65,12 +76,23 @@ public class DriveTeleop extends LinearOpMode {
     double tailGateServoSpeed = 0.5;
     private Servo armServo = null;
     double armServoSpeed = 0.5;
+    ColorSensor sensorColor;
+    DistanceSensor sensorDistance;
+    private DistanceSensor sensorRange;
+
 
     @Override
 
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        // 2m distance sensor
+        // you can use this as a regular DistanceSensor.
+        sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
+        // you can also cast this to a Rev2mDistanceSensor if you want to use added
+        // methods associated with the Rev2mDistanceSensor class.
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRange;
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -90,6 +112,26 @@ public class DriveTeleop extends LinearOpMode {
         armServo.setPosition(armServoSpeed);
         //servo.setPosition(servoPosition);
 
+        // *******************************
+        // Add distance/color sensor data.
+        // *******************************
+        // get a reference to the color sensor.
+        sensorColor = hardwareMap.get(ColorSensor.class, "sensor_color_distance");
+        // get a reference to the distance sensor that shares the same name.
+        sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F, 0F, 0F};
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
+        // sometimes it helps to multiply the raw RGB values with a scale factor
+        // to amplify/attentuate the measured values.
+        final double SCALE_FACTOR = 255;
+        // get a reference to the RelativeLayout so we can change the background
+        // color of the Robot Controller app to match the hue detected by the RGB sensor.
+        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
+        final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
+
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -101,7 +143,6 @@ public class DriveTeleop extends LinearOpMode {
             double leftPower;
             double rightPower;
 
-
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
 
@@ -111,12 +152,6 @@ public class DriveTeleop extends LinearOpMode {
             double turn  =  gamepad1.left_stick_x;
             leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
             rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
-
-            // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            // leftPower  = -gamepad1.left_stick_y ;
-            // rightPower = -gamepad1.right_stick_y ;
-
 
 
             // Send calculated power to wheels
@@ -155,6 +190,47 @@ public class DriveTeleop extends LinearOpMode {
                 sleep(1000);
                 armServo.setPosition(0.5);
             }
+
+            // *************
+            // sensor data
+            // ************
+            // convert the RGB values to HSV values.
+            // multiply by the SCALE_FACTOR.
+            // then cast it back to int (SCALE_FACTOR is a double)
+            Color.RGBToHSV((int) (sensorColor.red() * SCALE_FACTOR),
+                    (int) (sensorColor.green() * SCALE_FACTOR),
+                    (int) (sensorColor.blue() * SCALE_FACTOR),
+                    hsvValues);
+
+            // send the info back to driver station using telemetry function.
+            telemetry.addData("Distance (cm)",
+                    String.format(Locale.US, "%.02f", sensorDistance.getDistance(DistanceUnit.CM)));
+            telemetry.addData("Alpha", sensorColor.alpha());
+            telemetry.addData("Red  ", sensorColor.red());
+            telemetry.addData("Green", sensorColor.green());
+            telemetry.addData("Blue ", sensorColor.blue());
+            telemetry.addData("Hue", hsvValues[0]);
+
+            // change the background color to match the color detected by the RGB sensor.
+            // pass a reference to the hue, saturation, and value array as an argument
+            // to the HSVToColor method.
+            relativeLayout.post(new Runnable() {
+                public void run() {
+                    relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
+                }
+            });
+
+            // send information for 2m distance sensor
+            // generic DistanceSensor methods.
+            //telemetry.addData("deviceName",sensorRange.getDeviceName() );
+            //telemetry.addData("range", String.format("%.01f mm", sensorRange.getDistance(DistanceUnit.MM)));
+            telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
+            //telemetry.addData("range", String.format("%.01f m", sensorRange.getDistance(DistanceUnit.METER)));
+            telemetry.addData("range", String.format("%.01f in", sensorRange.getDistance(DistanceUnit.INCH)));
+
+            // Rev2mDistanceSensor specific methods.
+            telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
+            telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());

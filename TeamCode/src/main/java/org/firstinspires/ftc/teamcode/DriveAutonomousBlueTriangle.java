@@ -29,13 +29,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 /**
@@ -64,6 +68,9 @@ public class DriveAutonomousBlueTriangle extends LinearOpMode {
     double tailGateServoSpeed = 0.5;
     private Servo armServo = null;
     double armServoSpeed = 0.5;
+    DistanceSensor sensorDistance;
+    private DistanceSensor sensorRange;
+
 
     public void setDrive(double drivePower, double turnPower) {
         double leftPower;
@@ -94,6 +101,12 @@ public class DriveAutonomousBlueTriangle extends LinearOpMode {
         armLyft  = hardwareMap.get(DcMotor.class, "arm_lift");
         tailGateServo = hardwareMap.servo.get("tail_gate_servo");
         armServo = hardwareMap.servo.get("arm_servo");
+        // 2m distance sensor
+        // you can use this as a regular DistanceSensor.
+        sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
+        // you can also cast this to a Rev2mDistanceSensor if you want to use added
+        // methods associated with the Rev2mDistanceSensor class.
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRange;
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -108,132 +121,84 @@ public class DriveAutonomousBlueTriangle extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        // Drive straight for 2.5 seconds.
-        double drivePower = 1.0;
-        double turnPower = 0.0;
-        setDrive(drivePower, turnPower);
-        sleep(2500);
-        drivePower = 0.0;
-        setDrive(drivePower, turnPower);
+        // Drive to CZ
+        setDrive(-1.0,0.0);
+        sleep(930);
+        setDrive(0.0,0.0);
 
-        // Turn for 2.5 seconds.
-        drivePower = 0.0;
-        turnPower = 1.0;
-        setDrive(drivePower, turnPower);
-        sleep(2500);
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
-
-        // Drive straight for 0.5 seconds.
-        drivePower = 1.0;
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
+        // Grab CZ
+        tailGateServo.setPosition(0.0);
         sleep(500);
-        drivePower = 0.0;
-        setDrive(drivePower, turnPower);
+        tailGateServo.setPosition(0.5);
 
-        // Turn for 2 seconds.
-        drivePower = 0.0;
-        turnPower = 1.0;
-        setDrive(drivePower, turnPower);
-        sleep(2000);
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
+        // Move CZ Back
+        setDrive(1.0,0.0);
+        sleep(980);
+        setDrive(0.0,0.0);
 
-        // Drive straight for 2 seconds.
-        drivePower = 1.0;
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
-        sleep(2000);
-        drivePower = 0.0;
-        setDrive(drivePower, turnPower);
-
-        // Drive backwards for 0.5 seconds.
-        drivePower = -1.0;
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
+        // Let Go of CZ
+        tailGateServo.setPosition(1.0);
         sleep(500);
-        drivePower = 0.0;
-        setDrive(drivePower, turnPower);
+        tailGateServo.setPosition(0.5);
 
-        // Drive straight for 2 seconds.
-        drivePower = 1.0;
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
-        sleep(2000);
-        drivePower = 0.0;
-        setDrive(drivePower, turnPower);
+        // Turn to Face Right
+        setDrive(0.0, -1.0);
+        sleep(3000);
+        setDrive(0.0, 0.0);
 
-        // Drive backwards for 1 seconds.
-        drivePower = -1.0;
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
+        // Move Forward
+        setDrive(-1.0, 0.0);
+        sleep(1500);
+        setDrive(0.0,0.0);
+
+        // Turn Left
+        setDrive(0.0, 1.0);
+        sleep(3000);
+        setDrive(0.0,0.0);
+
+        // Move Forward
+        setDrive(-1.0,0.0);
+        sleep(1500);
+        setDrive(0.0,0.0);
+
+        // Turn Left
+        setDrive(0.0, 1.0);
+        sleep(2600);
+        setDrive(0.0, 0.0);
+
+        // Move Forward
+        setDrive(-1.0,0.0);
+        sleep(300);
+        setDrive(0.0,0.0);
+
+        // Turn to Face CZ
+        setDrive(0.0,1.0);
+        sleep(3100);
+        setDrive(0.0,0.0);
+
+        // Push CZ Into Zone
+        setDrive(-1.0,0.0);
+        sleep(1800);
+        setDrive(0.0,0.0);
+
+        // Move Back a 'Lil
+        setDrive(1.0,0.0);
         sleep(500);
-        drivePower = 0.0;
-        setDrive(drivePower, turnPower);
+        setDrive(0.0,0.0);
 
-        // Drive straight for 2 seconds.
-        drivePower = 1.0;
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
-        sleep(2000);
-        drivePower = 0.0;
-        setDrive(drivePower, turnPower);
+        // Turn Left
+        setDrive(0.0,1.0);
+        sleep(3000);
+        setDrive(0.0,0.0);
 
-        // Drive backwards for .5 seconds.
-        drivePower = -1.0;
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
-        sleep(500);
-        drivePower = 0.0;
-        setDrive(drivePower, turnPower);
-
-        // Drive straight for 2 seconds.
-        drivePower = 1.0;
-        turnPower = 0.0;
-        setDrive(drivePower, turnPower);
-        sleep(2000);
-        drivePower = 0.0;
-        setDrive(drivePower, turnPower);
-
-        /*
-            // Arm forward is y up. Arm backward is y down.
-            double armPower = gamepad1.right_stick_y;
-            armLyft.setPower(armPower);
-
-
-            // Hand/Grip. Pressing A closes it. Pressing B opens it.
-            if (gamepad1.y == true) {
-                tailGateServoSpeed = 1.0;
-                tailGateServo.setPosition(tailGateServoSpeed);
-                sleep(310);
-                tailGateServoSpeed = 0.5;
-                tailGateServo.setPosition(tailGateServoSpeed);
-            }
-            if (gamepad1.x == true) {
-                tailGateServoSpeed = 0.0;
-                tailGateServo.setPosition(tailGateServoSpeed);
-                sleep(300);
-                tailGateServoSpeed = 0.5;
-                tailGateServo.setPosition(tailGateServoSpeed);
-            }
-
-            if(gamepad1.a == true) {
-                armServo.setPosition(1.0);
-                sleep(1000);
-                armServo.setPosition(0.5);
-            }
-
-            if(gamepad1.b == true) {
-                armServo.setPosition(0.0);
-                sleep(1000);
-                armServo.setPosition(0.5);
-            }
-
-         */
+        // Move Forward
+        setDrive(-1.0,0.0);
+        sleep(1300);
+        setDrive(0.0,0.0);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
         //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
         //telemetry.addData("Arm power", "(%.2f)", armPower);
         telemetry.update();

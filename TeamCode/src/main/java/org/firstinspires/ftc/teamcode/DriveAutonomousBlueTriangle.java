@@ -133,7 +133,7 @@ public class DriveAutonomousBlueTriangle extends LinearOpMode {
 
         // Move CZ Back
         setDrive(1.0,0.0);
-        sleep(980);
+        sleep(950);
         setDrive(0.0,0.0);
 
         // Let Go of CZ
@@ -178,7 +178,7 @@ public class DriveAutonomousBlueTriangle extends LinearOpMode {
 
         // Push CZ Into Zone
         setDrive(-1.0,0.0);
-        sleep(1800);
+        sleep(1900);
         setDrive(0.0,0.0);
 
         // Move Back a 'Lil

@@ -123,22 +123,22 @@ public class DriveAutonomousBlueTriangle extends LinearOpMode {
 
         // Drive to CZ
         setDrive(-1.0,0.0);
-        sleep(930);
+        sleep(950);
         setDrive(0.0,0.0);
 
         // Grab CZ
         tailGateServo.setPosition(0.0);
-        sleep(500);
+        sleep(850);
         tailGateServo.setPosition(0.5);
 
         // Move CZ Back
         setDrive(1.0,0.0);
-        sleep(950);
+        sleep(1150);
         setDrive(0.0,0.0);
 
         // Let Go of CZ
         tailGateServo.setPosition(1.0);
-        sleep(500);
+        sleep(800);
         tailGateServo.setPosition(0.5);
 
         // Turn to Face Right
@@ -148,12 +148,12 @@ public class DriveAutonomousBlueTriangle extends LinearOpMode {
 
         // Move Forward
         setDrive(-1.0, 0.0);
-        sleep(1500);
+        sleep(1050);
         setDrive(0.0,0.0);
 
         // Turn Left
         setDrive(0.0, 1.0);
-        sleep(3000);
+        sleep(2300);
         setDrive(0.0,0.0);
 
         // Move Forward
@@ -163,22 +163,22 @@ public class DriveAutonomousBlueTriangle extends LinearOpMode {
 
         // Turn Left
         setDrive(0.0, 1.0);
-        sleep(2600);
+        sleep(4600);
         setDrive(0.0, 0.0);
 
         // Move Forward
         setDrive(-1.0,0.0);
-        sleep(300);
+        sleep(800);
         setDrive(0.0,0.0);
 
-        // Turn to Face CZ
+        // Turn Left to Face CZ
         setDrive(0.0,1.0);
-        sleep(3100);
+        sleep(4600);
         setDrive(0.0,0.0);
 
         // Push CZ Into Zone
         setDrive(-1.0,0.0);
-        sleep(1900);
+        sleep(2100);
         setDrive(0.0,0.0);
 
         // Move Back a 'Lil
@@ -188,12 +188,17 @@ public class DriveAutonomousBlueTriangle extends LinearOpMode {
 
         // Turn Left
         setDrive(0.0,1.0);
-        sleep(3000);
+        sleep(2100);
         setDrive(0.0,0.0);
+
+        // Bring down arm
+        armLyft.setPower(1.0);
+        sleep(100);
+        armLyft.setPower(0.0);
 
         // Move Forward
         setDrive(-1.0,0.0);
-        sleep(1300);
+        sleep(1850);
         setDrive(0.0,0.0);
 
         // Show the elapsed game time and wheel power.
